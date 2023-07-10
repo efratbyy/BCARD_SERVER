@@ -1,0 +1,18 @@
+{
+  "name": "init_app",
+  "version": "1.0.0",
+  "description": "testing the app-init",
+  "main": "app.js",
+  "scripts": {
+    "start": "node .",
+    "test": "node test",
+    "dev": "node . && node test && cd ./test && node testing"
+  },
+  "keywords": [
+    "app",
+    "app-init",
+    "init"
+  ],
+  "author": "Efrat Ben Yosef",
+  "license": "ISC"
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cors</title>
+</head>
+
+<body>
+    <h1>In cors example</h1>
+    <pre id="output"></pre>
+    <script>
+        const OUTPUT = document.getElementById("output");
+
+        const resultMessage = (message) => {
+            console.log(message);
+            OUTPUT.innerHTML = message;
+        }
+
+        const getData = async () => {
+            try {
+                const rawData = await fetch("http://127.0.0.1:8180/cards"); // The fetch function is used to send a GET request to the specified URL (http://localhost:8180).
+                // The response from the server is stored in the data variable.
+                const data = await rawData.json();// message וחילוץ json-המרת התשובה מהשרת ל
+                return resultMessage(JSON.stringify(data)); // html-בדף ה message מציג את 
+            } catch (error) {
+                resultMessage(`Error: ${error.message}`); // html-במידה ותהייה שגיאה יציג אותה בדף ה
+            }
+        };
+
+        getData();
+    </script>
+</body>
+
+</html>
