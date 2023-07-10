@@ -1,0 +1,26 @@
+{
+  "name": "test_npm_init",
+  "version": "1.0.0",
+  "description": "testing the npm init command",
+  "main": "app.js",
+  "scripts": {
+    "start": "node .",
+    "test": "node test",
+    "dev": "node app.js",
+    "print": "ECHO you entered a print command",
+    "mishmish": "ECHO I am Mishmish!!! && node .",
+    "nodemon": "nodemon ."
+  },
+  "keywords": [
+    "test",
+    "testing"
+  ],
+  "author": "Efrat Ben Yosef",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
