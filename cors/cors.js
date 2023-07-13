@@ -7,6 +7,7 @@ const authorizedAPIs = [
   "http://127.0.0.1:5500",
   "http://127.0.0.1:3000",
   "http://localhost:3000",
+  "http://localhost:8180",
 ];
 
 const options = (req, callback) => {
@@ -26,7 +27,11 @@ const options = (req, callback) => {
   callback(null, { origin: true });
 };
 
-app.use(cors(options));
+app.use(
+  cors({
+    origin: true,
+  })
+);
 
 module.exports = app;
 

@@ -8,12 +8,12 @@ const {
   editUser,
   changeUserBusinessStatus,
   deleteUser,
-  verifyGoogleIdToken,
+  loginWithGoogle,
 } = require("../controllers/usersController");
 
 router.post("/", register);
 router.post("/login", login);
-router.post("/loginWithGoogle", verifyGoogleIdToken);
+router.post("/loginWithGoogle", loginWithGoogle);
 router.get("/", getUsers);
 router.get("/:id", getUser);
 router.put("/:id", editUser);

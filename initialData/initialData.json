@@ -76,7 +76,8 @@
         "houseNumber": "5",
         "zip": 0
       },
-      "image": { "url": "", "alt": "" }
+      "image": { "url": "", "alt": "" },
+      "isGoogleSignup": false
     },
     {
       "name": { "first": "business", "last": "user" },
@@ -92,7 +93,8 @@
         "houseNumber": "5",
         "zip": 0
       },
-      "image": { "url": "", "alt": "" }
+      "image": { "url": "", "alt": "" },
+      "isGoogleSignup": false
     },
     {
       "name": { "first": "admin", "last": "user" },
@@ -109,7 +111,8 @@
         "houseNumber": "5",
         "zip": 0
       },
-      "image": { "url": "", "alt": "" }
+      "image": { "url": "", "alt": "" },
+      "isGoogleSignup": false
     }
   ]
 }

@@ -52,6 +52,7 @@ const registerValidation = (user) => {
       .required(),
     isBusiness: Joi.boolean().allow(""),
     isAdmin: Joi.boolean().allow(""),
+    isGoogleSignup: Joi.boolean().allow(""),
   });
   return schema.validate(user);
 };

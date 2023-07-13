@@ -12,7 +12,7 @@ const register = async (req, res) => {
   try {
     const user = req.body;
     const { email } = user;
-
+    console.log(user);
     const { error } = registerValidation(user);
     if (error)
       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
@@ -37,13 +37,15 @@ const login = async (req, res) => {
     const { error } = loginValidation(user);
     if (error)
       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
-
     const userInDB = await User.findOne({ email });
 
     if (!userInDB)
       throw new Error("Authentication Error: Invalid email or password");
 
+    console.log(userInDB);
     const isPasswordValid = comparePassword(user.password, userInDB.password);
+    console.log(user.password);
+    console.log(userInDB.password);
 
     if (!isPasswordValid)
       throw new Error("Authentication Error: Invalid email or password");
@@ -64,10 +66,91 @@ const login = async (req, res) => {
   }
 };
 
+const loginWithGoogle = async (req, res) => {
+  try {
+    const { token } = req.body;
+    console.log(token);
+    const clientId =
+      "238799202757-utcf1kgstkd14ibbqr67dq4kbd97le4p.apps.googleusercontent.com";
+    const client = new OAuth2Client(clientId);
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: clientId,
+    });
+
+    const getPayload = ticket.getPayload();
+    const lastName = String(getPayload["family_name"]);
+    const email = String(getPayload["email"]);
+    const firstName = String(getPayload["given_name"]);
+    console.log(getPayload);
+    let userInDB = await User.findOne({ email });
+
+    if (!userInDB) {
+      const userFromGoogle = {
+        name: { first: firstName, middle: "", last: lastName },
+        phone: "050-0000000",
+        email: email,
+        password: "Aa1234!",
+        image: {
+          url: "https://cdn.pixabay.com/photo/2018/01/26/09/06/people-3108155_1280.jpg",
+          alt: "Users image",
+        },
+        address: {
+          state: "",
+          country: "aaaaa",
+          city: "bbbbb",
+          street: "ccccc",
+          zip: 0,
+          houseNumber: "11111",
+        },
+        isBusiness: false,
+        isGoogleSignup: true,
+      };
+
+      const normalizedUser = normalizeUser(userFromGoogle);
+      const newUser = new User(normalizedUser);
+      userInDB = await newUser.save();
+      console.log(userInDB);
+    }
+    const { _id, isBusiness, isAdmin } = userInDB;
+    const user_token = generateAuthToken({ _id, isBusiness, isAdmin });
+    console.log(user_token);
+    res.send(user_token);
+  } catch (error) {
+    console.log(error);
+  }
+
+  // if (!userInDB)
+  // {
+  //   // TODO: signup
+  // }
+  // else {
+
+  //   const isPasswordValid = comparePassword(user.password, userInDB.password);
+
+  //   if (!isPasswordValid)
+  //     throw new Error("Authentication Error: Invalid email or password");
+
+  //   const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
+  //   const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
+  //   console.log(token);
+  //   res.send(token);
+  // } catch (error) {
+  //   const isAuthError =
+  //     error.message === "Authentication Error: Invalid email or password";
+  //   return handleError(
+  //     res,
+  //     isAuthError ? 403 : 500,
+  //     `Mongoose Error: ${error.message}`
+  //   );
+  // אז השגיאה תהייה 500 false השגיאה תהייה 403 ואם היא true הוא isAuthError אם  - isAuthError ? 403 : 500
+  // }
+};
+
 const verifyGoogleIdToken = async (req, res) => {
   const { idToken } = req.body;
   const clientId =
-    "238799202757-utcf1kgstkd14ibbqr67dq4kbd97le4p.apps.googleusercontent.com";
+    "238799202757-2g0on4abfov5mjrpk008b78kllp2vrv8.apps.googleusercontent.com";
   const client = new OAuth2Client(clientId);
 
   try {
@@ -182,6 +265,7 @@ const deleteUser = async (req, res) => {
 
 exports.register = register;
 exports.login = login;
+exports.loginWithGoogle = loginWithGoogle;
 exports.verifyGoogleIdToken = verifyGoogleIdToken;
 exports.getUsers = getUsers;
 exports.getUser = getUser;
