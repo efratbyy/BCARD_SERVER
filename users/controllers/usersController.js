@@ -42,6 +42,10 @@ const login = async (req, res) => {
     if (!userInDB)
       throw new Error("Authentication Error: Invalid email or password");
 
+    if (userInDB.isGoogleSignup == true)
+      throw new Error("Authentication Error: Use Google login");
+    // throw new Error("Authentication Error: Invalid email or password");
+
     console.log(userInDB);
     const isPasswordValid = comparePassword(user.password, userInDB.password);
     console.log(user.password);
@@ -206,9 +210,17 @@ const editUser = async (req, res) => {
     const { error } = userUpdateValidation(user);
     if (error)
       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
-
-    const userToUpdate = await normalizeUser(user);
-    userToUpdate.password = generateUserPassword(userToUpdate.password);
+    const existUser = await User.findById(id);
+    let userToUpdate;
+    if (existUser.password == user.password) {
+      const oldPassword = user.password;
+      // שמירת הסיסמא  המוצפנת של המשתמש לפני העדכון
+      userToUpdate = await normalizeUser(user);
+      // מעבירה את המשתמש תהליך של נורמליזציה שבסופה מצפינה את הסיסמא הקיימת - סהכ 2 הצפנות מאחר והסיסמא מגיעה ממאגר המידע מוצפן וכשחוזר עובר הצפנה נוספת
+      userToUpdate.password = oldPassword; //
+    } else {
+      userToUpdate = await normalizeUser(user);
+    }
 
     const userFromDB = await User.findByIdAndUpdate(id, userToUpdate, {
       new: true,
