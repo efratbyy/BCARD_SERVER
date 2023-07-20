@@ -7,19 +7,17 @@ const { comparePassword, generateUserPassword } = require("../helpers/bcrypt");
 const { generateAuthToken } = require("../../auth/Providers/jwt");
 const { OAuth2Client } = require("google-auth-library");
 const userUpdateValidation = require("../models/joi/userUpdateValidation");
+const { userFromGoogle } = require("../../initialData/initGoogleUserData");
 
 const register = async (req, res) => {
   try {
     const user = req.body;
     const { email } = user;
-    console.log(user);
     const { error } = registerValidation(user);
     if (error)
       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
-
     const isUserExistInDB = await User.findOne({ email });
     if (isUserExistInDB) throw new Error("User already registered");
-
     const normalizedUser = normalizeUser(user);
     const newUser = new User(normalizedUser);
     const userFromDB = await newUser.save();
@@ -33,31 +31,44 @@ const login = async (req, res) => {
   try {
     const user = req.body;
     const { email } = user;
-
-    const { error } = loginValidation(user);
+    const { error } = loginValidation(user); // server side validation
     if (error)
       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
     const userInDB = await User.findOne({ email });
-
     if (!userInDB)
       throw new Error("Authentication Error: Invalid email or password");
-
     if (userInDB.isGoogleSignup == true)
       throw new Error("Authentication Error: Use Google login");
     // throw new Error("Authentication Error: Invalid email or password");
-
-    console.log(userInDB);
     const isPasswordValid = comparePassword(user.password, userInDB.password);
-    console.log(user.password);
-    console.log(userInDB.password);
-
-    if (!isPasswordValid)
-      throw new Error("Authentication Error: Invalid email or password");
-
-    const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
-    const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
-    console.log(token);
-    res.send(token);
+    if (!isPasswordValid) {
+      userInDB.loginFailedCounter += 1; // ב-1 loginFailedCounter-במידה והסיסמא לא נכונה יעלה ה
+      if (userInDB.loginFailedCounter >= 3) {
+        userInDB.isBlocked = true;
+        userInDB.blockedTime = new Date();
+      }
+      await User.findByIdAndUpdate(userInDB.id, userInDB);
+      throw new Error("Authentication Error: User is Blocked!");
+    } else if (!userInDB.isBlocked) {
+      const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
+      const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
+      res.send(token);
+    } else {
+      const twentyFourHoursBefore = new Date(
+        new Date().getTime() - 24 * 60 * 60 * 1000
+      );
+      if (userInDB.blockedTime < twentyFourHoursBefore) {
+        userInDB.isBlocked = false;
+        userInDB.blockedTime = new Date();
+        userInDB.loginFailedCounter = 0;
+        await User.findByIdAndUpdate(userInDB.id, userInDB);
+        const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
+        const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
+        res.send(token);
+      } else {
+        throw new Error("Authentication Error: User is still Blocked!");
+      }
+    }
   } catch (error) {
     const isAuthError =
       error.message === "Authentication Error: Invalid email or password";
@@ -73,7 +84,6 @@ const login = async (req, res) => {
 const loginWithGoogle = async (req, res) => {
   try {
     const { token } = req.body;
-    console.log(token);
     const clientId =
       "238799202757-utcf1kgstkd14ibbqr67dq4kbd97le4p.apps.googleusercontent.com";
     const client = new OAuth2Client(clientId);
@@ -81,74 +91,48 @@ const loginWithGoogle = async (req, res) => {
       idToken: token,
       audience: clientId,
     });
-
     const getPayload = ticket.getPayload();
     const lastName = String(getPayload["family_name"]);
     const email = String(getPayload["email"]);
     const firstName = String(getPayload["given_name"]);
-    console.log(getPayload);
     let userInDB = await User.findOne({ email });
-
     if (!userInDB) {
-      const userFromGoogle = {
-        name: { first: firstName, middle: "", last: lastName },
-        phone: "050-0000000",
-        email: email,
-        password: "Aa1234!",
-        image: {
-          url: "https://cdn.pixabay.com/photo/2018/01/26/09/06/people-3108155_1280.jpg",
-          alt: "Users image",
-        },
-        address: {
-          state: "",
-          country: "aaaaa",
-          city: "bbbbb",
-          street: "ccccc",
-          zip: 0,
-          houseNumber: "11111",
-        },
-        isBusiness: false,
-        isGoogleSignup: true,
-      };
-
+      const userFromGoogle = userFromGoogle;
+      userFromGoogle.name = { first: firstName, middle: "", last: lastName };
+      userFromGoogle.email = email;
+      // const userFromGoogle = {
+      //   name: { first: firstName, middle: "", last: lastName },
+      //   phone: "050-0000000",
+      //   email: email,
+      //   password: "Aa1234!",
+      //   image: {
+      //     url: "https://cdn.pixabay.com/photo/2018/01/26/09/06/people-3108155_1280.jpg",
+      //     alt: "Users image",
+      //   },
+      //   address: {
+      //     state: "",
+      //     country: "aaaaa",
+      //     city: "bbbbb",
+      //     street: "ccccc",
+      //     zip: 0,
+      //     houseNumber: "11111",
+      //   },
+      //   isBusiness: false,
+      //   isGoogleSignup: true,
+      //   isBlocked: false,
+      //   loginFailedCounter: 0,
+      //   blockedTime: new Date(),
+      // };
       const normalizedUser = normalizeUser(userFromGoogle);
       const newUser = new User(normalizedUser);
       userInDB = await newUser.save();
-      console.log(userInDB);
     }
     const { _id, isBusiness, isAdmin } = userInDB;
     const user_token = generateAuthToken({ _id, isBusiness, isAdmin });
-    console.log(user_token);
     res.send(user_token);
   } catch (error) {
     console.log(error);
   }
-
-  // if (!userInDB)
-  // {
-  //   // TODO: signup
-  // }
-  // else {
-
-  //   const isPasswordValid = comparePassword(user.password, userInDB.password);
-
-  //   if (!isPasswordValid)
-  //     throw new Error("Authentication Error: Invalid email or password");
-
-  //   const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
-  //   const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
-  //   console.log(token);
-  //   res.send(token);
-  // } catch (error) {
-  //   const isAuthError =
-  //     error.message === "Authentication Error: Invalid email or password";
-  //   return handleError(
-  //     res,
-  //     isAuthError ? 403 : 500,
-  //     `Mongoose Error: ${error.message}`
-  //   );
-  // אז השגיאה תהייה 500 false השגיאה תהייה 403 ואם היא true הוא isAuthError אם  - isAuthError ? 403 : 500
-  // }
 };
 
 const verifyGoogleIdToken = async (req, res) => {
@@ -156,18 +140,15 @@ const verifyGoogleIdToken = async (req, res) => {
   const clientId =
     "238799202757-2g0on4abfov5mjrpk008b78kllp2vrv8.apps.googleusercontent.com";
   const client = new OAuth2Client(clientId);
-
   try {
     const ticket = await client.verifyIdToken({
       idToken,
       audience: clientId,
     });
-
     const payload = ticket.getPayload();
     const userId = payload.sub;
     const email = payload.email;
     const name = payload.name;
-
     return res.send({ success: true, userId, email, name });
   } catch (error) {
     return handleError(res, 404, `Mongoose Error: ${error.message}`);
@@ -186,7 +167,6 @@ const getUsers = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     let { id } = req.params;
-
     const user = await User.findById(id);
     if (!user) throw new Error("Could not find this user in the database");
     return res.send(user);
@@ -199,14 +179,9 @@ const editUser = async (req, res) => {
   try {
     const user = req.body;
     const { id } = req.params;
-    console.log("id:", id);
-    console.log("user:", user);
-    console.log(typeof user);
-
     if (!user || typeof user !== "object" || !user.name || !user.password) {
       throw new Error("Invalid user object");
     }
-
     const { error } = userUpdateValidation(user);
     if (error)
       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
@@ -221,16 +196,13 @@ const editUser = async (req, res) => {
     } else {
       userToUpdate = await normalizeUser(user);
     }
-
     const userFromDB = await User.findByIdAndUpdate(id, userToUpdate, {
       new: true,
     });
-
     if (!userFromDB)
       throw new Error(
         "Could not update this user because a user with this ID cannot be found in the database”"
       );
-
     return res.send(userFromDB);
   } catch (error) {
     return handleError(res, 404, `Mongoose Error: ${error.message}`);
@@ -240,11 +212,9 @@ const editUser = async (req, res) => {
 const changeUserBusinessStatus = async (req, res) => {
   try {
     const { id } = req.params;
-
     isUserExistInDB = await User.findById(id);
     if (!isUserExistInDB)
       throw new Error("No user with this id was found in the database!");
-
     const userFromDB = await User.findByIdAndUpdate(
       id,
       { isBusiness: !isUserExistInDB.isBusiness },
@@ -259,15 +229,11 @@ const changeUserBusinessStatus = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     let { id } = req.params;
-
     const user = await User.findById(id);
-    // console.log(user);
-
     if (!user)
       throw new Error(
         "Could not delete this user because a user with this ID cannot be found in the database"
       );
-
     const deletedUserFromDB = await User.findByIdAndDelete(id);
     res.send(deletedUserFromDB);
   } catch (error) {

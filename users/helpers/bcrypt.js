@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const generateUserPassword = (password) => bcrypt.hashSync(password, 10);
 
 const comparePassword = (passwordFromUser, passwordFromDB) =>
-  bcrypt.compareSync(passwordFromUser, passwordFromDB);
+  bcrypt.compareSync(passwordFromUser, passwordFromDB); // מצפינה את הסיסמא מהמשתמש ומשווה בין הסיסמא המוצפנת במסד הנתונים
 
 exports.generateUserPassword = generateUserPassword;
 exports.comparePassword = comparePassword;

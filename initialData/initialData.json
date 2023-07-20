@@ -77,7 +77,10 @@
         "zip": 0
       },
       "image": { "url": "", "alt": "" },
-      "isGoogleSignup": false
+      "isGoogleSignup": false,
+      "isBlocked": false,
+      "loginFailedCounter": 0,
+      "blockedTime": ""
     },
     {
       "name": { "first": "business", "last": "user" },
@@ -94,7 +97,10 @@
         "zip": 0
       },
       "image": { "url": "", "alt": "" },
-      "isGoogleSignup": false
+      "isGoogleSignup": false,
+      "isBlocked": false,
+      "loginFailedCounter": 0,
+      "blockedTime": ""
     },
     {
       "name": { "first": "admin", "last": "user" },
@@ -112,7 +118,10 @@
         "zip": 0
       },
       "image": { "url": "", "alt": "" },
-      "isGoogleSignup": false
+      "isGoogleSignup": false,
+      "isBlocked": false,
+      "loginFailedCounter": 0,
+      "blockedTime": ""
     }
   ]
 }

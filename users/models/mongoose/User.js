@@ -121,6 +121,18 @@ const schema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  loginFailedCounter: {
+    type: Number,
+    default: false,
+  },
+  blockedTime: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const User = mongoose.model("user", schema);
