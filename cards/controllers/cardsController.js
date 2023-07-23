@@ -77,19 +77,13 @@ const editCard = async (req, res) => {
     const cardToUpdate = await normalizeCard(card, user._id);
 
     const { bizNumber } = cardToUpdate;
-
     const isBizNumberExist = await Card.findOne({ bizNumber });
-
+    if (!isBizNumberExist && !user.isAdmin)
+      throw new Error("Only admin can edit the bizNumber!");
     if (isBizNumberExist && isBizNumberExist._id != cardId)
       throw new Error(
-        "User with this bizNumber is alredy exist in the database!"
+        "User with this bizNumber is already exist in the database!"
       );
-
-    // cardFromDB = await Card.findByIdAndUpdate(
-    //   cardId,
-    //   { $set: { bizNumber: bizNumber } },
-    //   { new: true }
-    // );
 
     const cardFromDB = await Card.findByIdAndUpdate(cardId, cardToUpdate, {
       new: true,
@@ -145,7 +139,6 @@ const deleteCard = async (req, res) => {
     cardId = cardId.trim();
 
     const card = await Card.findById(cardId);
-
     if (!card)
       throw new Error(
         "Could not delete this card because a card with this ID cannot be found in the database"
@@ -168,9 +161,6 @@ const changeBizNumber = async (req, res) => {
     const card = req.body;
     const user = req.user;
     const { cardId } = req.params;
-    console.log(card);
-    // console.log(user);
-    // console.log(cardId);
 
     // if (!user.isAdmin);
     // throw new Error(
@@ -182,13 +172,8 @@ const changeBizNumber = async (req, res) => {
       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
 
     const cardToChangeBizNumber = await normalizeCard(card, user._id);
-
     const { bizNumber } = cardToChangeBizNumber;
-
     const isBizNumberExist = await Card.findOne({ bizNumber });
-    // console.log(isBizNumberExist);
-    // console.log(isBizNumberExist._id);
-    // console.log(cardToChangeBizNumber);
 
     if (isBizNumberExist && isBizNumberExist._id != cardId)
       throw new Error(

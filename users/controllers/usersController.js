@@ -46,9 +46,11 @@ const login = async (req, res) => {
       if (userInDB.loginFailedCounter >= 3) {
         userInDB.isBlocked = true;
         userInDB.blockedTime = new Date();
+        await User.findByIdAndUpdate(userInDB.id, userInDB);
+        throw new Error("Authentication Error: User is Blocked!");
       }
       await User.findByIdAndUpdate(userInDB.id, userInDB);
-      throw new Error("Authentication Error: User is Blocked!");
+      throw new Error("Authentication Error: Invalid email or password");
     } else if (!userInDB.isBlocked) {
       const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
       const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
@@ -100,29 +102,6 @@ const loginWithGoogle = async (req, res) => {
       const userFromGoogle = userFromGoogle;
       userFromGoogle.name = { first: firstName, middle: "", last: lastName };
       userFromGoogle.email = email;
-      // const userFromGoogle = {
-      //   name: { first: firstName, middle: "", last: lastName },
-      //   phone: "050-0000000",
-      //   email: email,
-      //   password: "Aa1234!",
-      //   image: {
-      //     url: "https://cdn.pixabay.com/photo/2018/01/26/09/06/people-3108155_1280.jpg",
-      //     alt: "Users image",
-      //   },
-      //   address: {
-      //     state: "",
-      //     country: "aaaaa",
-      //     city: "bbbbb",
-      //     street: "ccccc",
-      //     zip: 0,
-      //     houseNumber: "11111",
-      //   },
-      //   isBusiness: false,
-      //   isGoogleSignup: true,
-      //   isBlocked: false,
-      //   loginFailedCounter: 0,
-      //   blockedTime: new Date(),
-      // };
       const normalizedUser = normalizeUser(userFromGoogle);
       const newUser = new User(normalizedUser);
       userInDB = await newUser.save();
