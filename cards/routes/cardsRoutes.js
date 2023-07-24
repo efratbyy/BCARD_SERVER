@@ -19,5 +19,6 @@ router.post("/", auth, createCard);
 router.put("/:cardId", auth, editCard);
 router.patch("/:cardId", auth, likeCard);
 router.delete("/:cardId", auth, deleteCard);
+router.put("/biz/:cardId", auth, changeBizNumber);
 
 module.exports = router;

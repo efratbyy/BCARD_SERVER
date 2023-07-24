@@ -166,6 +166,11 @@ const editUser = async (req, res) => {
       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
     const existUser = await User.findById(id);
     let userToUpdate;
+    console.log("User To pdate" + id);
+    console.log("exist: " + existUser);
+
+    console.log("user" + user);
+
     if (existUser.password == user.password) {
       const oldPassword = user.password;
       // שמירת הסיסמא  המוצפנת של המשתמש לפני העדכון

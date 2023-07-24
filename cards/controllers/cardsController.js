@@ -77,10 +77,11 @@ const editCard = async (req, res) => {
     const cardToUpdate = await normalizeCard(card, user._id);
 
     const { bizNumber } = cardToUpdate;
+    console.log("sagiv" + card.bizNumber);
     const isBizNumberExist = await Card.findOne({ bizNumber });
-    if (!isBizNumberExist && !user.isAdmin)
+    if (card.bizNumber && !isBizNumberExist && !user.isAdmin)
       throw new Error("Only admin can edit the bizNumber!");
-    if (isBizNumberExist && isBizNumberExist._id != cardId)
+    if (card.bizNumber && isBizNumberExist && isBizNumberExist._id != cardId)
       throw new Error(
         "User with this bizNumber is already exist in the database!"
       );
@@ -137,12 +138,18 @@ const deleteCard = async (req, res) => {
     const user = req.user;
     let { cardId } = req.params;
     cardId = cardId.trim();
+    console.log(req);
 
     const card = await Card.findById(cardId);
     if (!card)
       throw new Error(
         "Could not delete this card because a card with this ID cannot be found in the database"
       );
+
+    console.log("user:" + user.email);
+
+    console.log("user:" + user._id);
+    console.log("card:" + card.user_id);
 
     if (!user.isAdmin && user._id != card.user_id)
       throw new Error(
@@ -162,10 +169,10 @@ const changeBizNumber = async (req, res) => {
     const user = req.user;
     const { cardId } = req.params;
 
-    // if (!user.isAdmin);
-    // throw new Error(
-    //   "You must be an admin type user in order to change the bizNumber"
-    // );
+    if (!user.isAdmin)
+      throw new Error(
+        "You must be an admin type user in order to change the bizNumber"
+      );
 
     const { error } = validateCard(card);
     if (error)
@@ -177,7 +184,7 @@ const changeBizNumber = async (req, res) => {
 
     if (isBizNumberExist && isBizNumberExist._id != cardId)
       throw new Error(
-        "User with this bizNumber is alredy exist in the database!"
+        "User with this bizNumber is already exist in the database!"
       );
 
     cardFromDB = await Card.findByIdAndUpdate(
