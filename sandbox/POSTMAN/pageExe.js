@@ -1,6 +1,3 @@
-// הבאת דף מצד שרת לצד לקוח
-// לדוגמא: כאשר משתמש שוכח סיסמא ומקבל מייל מהשרת לשיחזור סיסמא, פה אפשר ליצור את הדף שהמשתמש יקבל למייל
-
 const page = `<!DOCTYPE html>
   <html lang="en">
     <head>
@@ -85,10 +82,9 @@ const page = `<!DOCTYPE html>
         <p>This is an example of serving a page from the node.js server</p>
       </main>
       <footer class="border-top pt-3 bg-dark center">
-        <p class="text-light">Created by David Yakin &copy;</p>
+        <p class="text-light">Created by Efrat Ben Yosef &copy;</p>
       </footer>
     </body>
   </html>`;
 
 module.exports = page;
-

@@ -1,7 +1,4 @@
 const Joi = require("joi");
-// זו הסכמה שמחייבת את צד לקוח במילוי טפסים Joi
-// זו הסכמה שצריך לעבור לפני שנשמר במאגר המידע Card
-// normalizeCard.js בכדי לגשר על הפער יצרנו את הפונקציה
 
 const validateCard = (card) => {
   const URL =
@@ -11,9 +8,9 @@ const validateCard = (card) => {
     title: Joi.string().min(2).max(256).required(),
     subtitle: Joi.string().min(2).max(256).required(),
     description: Joi.string().min(2).max(1024).required(),
-    phone: Joi.string() // רג׳קס עובד רק עם סטרינג
-      .ruleset.regex(/0[0-9]{1,2}\-?\s?[0-9]{3}\s?[0-9]{4}/) // קובע מה יהיו הדרישות
-      .rule({ message: 'card "phone" mast be a valid phone number' }) // ruleset-יופעל במידה ולא יעמדו בדרישות שנקבעו ב
+    phone: Joi.string()
+      .ruleset.regex(/0[0-9]{1,2}\-?\s?[0-9]{3}\s?[0-9]{4}/)
+      .rule({ message: 'card "phone" mast be a valid phone number' })
       .required(),
     email: Joi.string()
       .ruleset.pattern(
@@ -47,7 +44,7 @@ const validateCard = (card) => {
     bizNumber: Joi.number().allow(""),
     user_id: Joi.string().allow(""),
   });
-  return schema.validate(card); // schema מחזירה אובייקט שעבר את הוולידציה של validate המטודה
+  return schema.validate(card);
 };
 
 module.exports = validateCard;

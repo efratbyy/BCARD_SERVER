@@ -1,7 +1,7 @@
 const OS = require("os");
 
-const TOTAL_MEMORY = `${OS.totalmem() / 1073741824} GB`; // bytes-מקבל את גודל הזיכרון של המחשב ב
-const FREE_MEMORY = `${OS.freemem() / 1073741824} GB`; // bytes-מקבל את הזיכרון הפנוי ב
+const TOTAL_MEMORY = `${OS.totalmem() / 1073741824} GB`;
+const FREE_MEMORY = `${OS.freemem() / 1073741824} GB`;
 const memoryInfo = { total: TOTAL_MEMORY, free: FREE_MEMORY };
 const NAME_SYSTEM = `${OS.platform()}`;
 const VERSION_SYSTEM = `${OS.version()}`;

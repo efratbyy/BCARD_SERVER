@@ -1,7 +1,4 @@
 const mongoose = require("mongoose");
-// זו הסכמה שצריך לעבור לפני שנשמר במאגר המידע Card
-// זו הסכמה שמחייבת את צד לקוח במילוי טפסים Joi
-// normalizeCard.js בכדי לגשר על הפער יצרנו את הפונקציה
 
 const URL =
   /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;

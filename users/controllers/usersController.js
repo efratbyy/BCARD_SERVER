@@ -3,7 +3,7 @@ const { handleError } = require("../../utils/handleErrors");
 const User = require("../models/mongoose/User");
 const normalizeUser = require("../helpers/normalizeUser");
 const loginValidation = require("../models/joi/loginValidation");
-const { comparePassword, generateUserPassword } = require("../helpers/bcrypt");
+const { comparePassword } = require("../helpers/bcrypt");
 const { generateAuthToken } = require("../../auth/Providers/jwt");
 const { OAuth2Client } = require("google-auth-library");
 const userUpdateValidation = require("../models/joi/userUpdateValidation");
@@ -31,7 +31,7 @@ const login = async (req, res) => {
   try {
     const user = req.body;
     const { email } = user;
-    const { error } = loginValidation(user); // server side validation
+    const { error } = loginValidation(user);
     if (error)
       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
     const userInDB = await User.findOne({ email });
@@ -42,7 +42,7 @@ const login = async (req, res) => {
     // throw new Error("Authentication Error: Invalid email or password");
     const isPasswordValid = comparePassword(user.password, userInDB.password);
     if (!isPasswordValid) {
-      userInDB.loginFailedCounter += 1; // ב-1 loginFailedCounter-במידה והסיסמא לא נכונה יעלה ה
+      userInDB.loginFailedCounter += 1;
       if (userInDB.loginFailedCounter >= 3) {
         userInDB.isBlocked = true;
         userInDB.blockedTime = new Date();
@@ -52,8 +52,8 @@ const login = async (req, res) => {
       await User.findByIdAndUpdate(userInDB.id, userInDB);
       throw new Error("Authentication Error: Invalid email or password");
     } else if (!userInDB.isBlocked) {
-      const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
-      const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
+      const { _id, isBusiness, isAdmin } = userInDB;
+      const token = generateAuthToken({ _id, isBusiness, isAdmin });
       res.send(token);
     } else {
       const twentyFourHoursBefore = new Date(
@@ -64,8 +64,8 @@ const login = async (req, res) => {
         userInDB.blockedTime = new Date();
         userInDB.loginFailedCounter = 0;
         await User.findByIdAndUpdate(userInDB.id, userInDB);
-        const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
-        const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
+        const { _id, isBusiness, isAdmin } = userInDB;
+        const token = generateAuthToken({ _id, isBusiness, isAdmin });
         res.send(token);
       } else {
         throw new Error("Authentication Error: User is still Blocked!");
@@ -79,7 +79,6 @@ const login = async (req, res) => {
       isAuthError ? 403 : 500,
       `Mongoose Error: ${error.message}`
     );
-    // אז השגיאה תהייה 500 false השגיאה תהייה 403 ואם היא true הוא isAuthError אם  - isAuthError ? 403 : 500
   }
 };
 
@@ -166,17 +165,10 @@ const editUser = async (req, res) => {
       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
     const existUser = await User.findById(id);
     let userToUpdate;
-    console.log("User To pdate" + id);
-    console.log("exist: " + existUser);
-
-    console.log("user" + user);
-
     if (existUser.password == user.password) {
       const oldPassword = user.password;
-      // שמירת הסיסמא  המוצפנת של המשתמש לפני העדכון
       userToUpdate = await normalizeUser(user);
-      // מעבירה את המשתמש תהליך של נורמליזציה שבסופה מצפינה את הסיסמא הקיימת - סהכ 2 הצפנות מאחר והסיסמא מגיעה ממאגר המידע מוצפן וכשחוזר עובר הצפנה נוספת
-      userToUpdate.password = oldPassword; //
+      userToUpdate.password = oldPassword;
     } else {
       userToUpdate = await normalizeUser(user);
     }
@@ -234,141 +226,3 @@ exports.getUser = getUser;
 exports.editUser = editUser;
 exports.changeUserBusinessStatus = changeUserBusinessStatus;
 exports.deleteUser = deleteUser;
-
-// const registerValidation = require("../models/joi/registerValidation");
-// const { handleError } = require("../../utils/handleErrors");
-// const User = require("../models/mongoose/User");
-// const normalizeUser = require("../helpers/normalizeUser");
-// const loginValidation = require("../models/joi/loginValidation");
-// const { comparePassword, generateUserPassword } = require("../helpers/bcrypt");
-// const { generateAuthToken } = require("../../auth/Providers/jwt");
-
-// const register = async (req, res) => {
-//   try {
-//     const user = req.body;
-//     const { email } = user;
-
-//     const { error } = registerValidation(user);
-//     if (error)
-//       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
-
-//     const isUserExistInDB = await User.findOne({ email });
-//     if (isUserExistInDB) throw new Error("User already registered");
-//     // במידה והמייל קיים יזרוק שגיאה
-
-//     const normalizedUser = normalizeUser(user);
-//     const newUser = new User(normalizedUser);
-//     const userFromDB = await newUser.save();
-//     res.status(201).send(userFromDB);
-//   } catch (error) {
-//     return handleError(res, 500, `Joi Error: ${error.message}`);
-//   }
-// };
-
-// const login = async (req, res) => {
-//   try {
-//     const user = req.body;
-//     const { email } = user;
-
-//     const { error } = loginValidation(user);
-//     if (error)
-//       return handleError(res, 400, `Joi Error: ${error.details[0].message}`);
-
-//     const userInDB = await User.findOne({ email });
-
-//     if (!userInDB)
-//       throw new Error("Authentication Error: Invalid email or password");
-
-//     const isPasswordValid = comparePassword(user.password, userInDB.password);
-
-//     if (!isPasswordValid)
-//       throw new Error("Authentication Error: Invalid email or password");
-
-//     const { _id, isBusiness, isAdmin } = userInDB; // token-שנוצר בשורה 40 את מה שצריכה בשביל לייצר את ה userInDB-מחלצת התוך ה
-//     const token = generateAuthToken({ _id, isBusiness, isAdmin }); // עם השדות הדרושים לו token-מייצרת את ה
-//     console.log(token);
-//     res.send(token); // המוצפן לגולש token-מחזיר את ה
-//   } catch (error) {
-//     const isAuthError =
-//       error.message === "Authentication Error: Invalid email or password";
-//     return handleError(
-//       res,
-//       isAuthError ? 403 : 500,
-//       `Mongoose Error: ${error.message}`
-//     );
-//     // אז השגיאה תהייה 500 false השגיאה תהייה 403 ואם היא true הוא isAuthError אם  - isAuthError ? 403 : 500
-//   }
-// };
-
-// const getUsers = async (req, res) => {
-//   try {
-//     const users = await User.find().sort({ createdAt: 1 });
-//     return res.send(users);
-//   } catch (error) {
-//     return handleError(res, 404, `Mongoose Error: ${error.message}`);
-//   }
-// };
-
-// const getUser = async (req, res) => {
-//   try {
-//     const { userId } = req.user;
-//     const user = await User.findById(userId);
-//     if (!user) throw new Error("Could not find this user in the database");
-//     return res.send(user);
-//   } catch (error) {
-//     return handleError(res, 404, `Mongoose Error: ${error.message}`);
-//   }
-// };
-
-// const editUser = async (req, res) => {
-//   try {
-//     const user = req.user;
-//     const { userId } = req.user;
-//     console.log(userId);
-//     console.log(user);
-
-//     const { error } = registerValidation(user);
-//     if (error)
-//       return handleError(res, 400, `Joi error: ${error.details[0].message}`);
-
-//     const userToUpdate = await normalizeUser(user);
-//     userToUpdate.password = generateUserPassword(userToUpdate.password);
-//     console.log("userToUpdate:", userToUpdate);
-//     console.log(typeof userId);
-
-//     const userFromDB = await User.findByIdAndUpdate(userId, userToUpdate, {
-//       new: true,
-//     });
-//     console.log("userFromDB:", userFromDB);
-
-//     if (!userFromDB)
-//       throw new Error(
-//         "Could not update this user because a user with this ID cannot be found in the database”"
-//       );
-
-//     return res.send(userFromDB);
-//   } catch (error) {
-//     return handleError(res, 404, `Mongoose Error: ${error.message}`);
-//   }
-// };
-
-// exports.register = register;
-// exports.login = login;
-// exports.getUsers = getUsers;
-// exports.getUser = getUser;
-// exports.editUser = editUser;
-
-// const express = require("express");
-// const router = express.Router();
-
-// router.post("/", (req, res) => {
-//   console.log("in users registration");
-//   req.send("in users registration");
-// });
-
-// router.post("/login", (req, res) => {
-//   console.log("in users login");
-//   req.send("in users login");
-// });
-
-// module.exports = router;

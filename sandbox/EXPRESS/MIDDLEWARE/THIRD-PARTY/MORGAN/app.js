@@ -1,6 +1,3 @@
-// MORGAN - http-מציג את בקשות ה
-// npm i morgan
-
 const express = require("express");
 const app = express();
 const chalk = require("chalk");
@@ -30,7 +27,6 @@ app.use(
   })
 );
 
-
 // /******* דרך א׳ *******/
 // app.use(
 //   morgan(
@@ -41,24 +37,15 @@ app.use(
 // /******* דרך ב׳ *******/
 // app.use(
 //   morgan((tokens, req, res) => {
-//     // :url - אובייקט שיכיל את המטודות, כמו לדוגמא - tokens
-//     // אובייקט הבקשה - req
-//     // אובייקט התגובה - res
 //     return [
-//       // הפונקציה מחזירה מערך של מחרוזת תווים
-//       // מחזירה מחרוזת תווים tokens-כל מטודה של ה
-//       // כל אחת מהשורות הבאות זה איבר במערך
 //       tokens.method(req, res),
 //       tokens.url(req, res),
 //       tokens.status(req, res),
 //       "-",
-//       tokens["response-time"](req, res), // tokens-באובייקט ה response-time ניגש למפתח
-//       "ms",
-//     ].join(" "); // מחבר את כל מחרוזות התווים ומוסיף בניהם רווחים
-//     // שעובדת עם מערכים js זוהי מטודה של join
+//       tokens["response-time"](req, res),
+//     ].join(" ");
 //   })
-// ); // הופכת את מערך מחרוזות התווים למחרוזת תווים אחת ומדפיסה אותה בקונסול morgan הפונקציה
-// // POST / 404 - 3.257 ms :התוצאה בקונסול
+// );
 
 const PORT = 7171;
 app.listen(PORT, () =>

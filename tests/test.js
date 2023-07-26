@@ -28,10 +28,9 @@ params = {
 
 /**************** *****************/
 // app.use(express.json());
-// app.use(express.static("./public")); // public אומר שהתקייה הדיפולטיבית לקבלת קבצי תמונה/וידאו/אדיאו היא
-// // public מאפשר גישה לקבלת קבצים מתקיית
+// app.use(express.static("./public"));
 // app.use(express.text());
-// app.use(router); // router.js מתוך router זהו מיירט לכל הכתובות בכל המטודות שיפעיל את פונקציית
+// app.use(router);
 // const { errorHandler } = require("./sandbox/UTILS/errorHandler");
 
 // app.get("/", (req, res) => {
@@ -94,7 +93,6 @@ params = {
 /********* router *********/
 
 // router.get("/message", (req, res) => {
-//   // http://localhost:8180/cards/message נכתוב postman-ב
 //   console.log("in router get!");
 //   res.send({ message: "in router get!!!" });
 // });
@@ -104,8 +102,7 @@ params = {
 //   res.send("in post!!!");
 // });
 
-// app.use("/cards", router); // http://localhost:8180/cards נכתוב postman-ב
-// // router אז תופעל הפונקציה של /cards-אם שורת הכתובת תתחיל ב
+// app.use("/cards", router);
 
 // router.use((error, req, res, next) => {
 //   errorHandler(res, 500, error.message);

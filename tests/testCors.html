@@ -21,12 +21,11 @@
 
         const getData = async () => {
             try {
-                const rawData = await fetch("http://127.0.0.1:8180/cards"); // The fetch function is used to send a GET request to the specified URL (http://localhost:8180).
-                // The response from the server is stored in the data variable.
-                const data = await rawData.json();// message וחילוץ json-המרת התשובה מהשרת ל
-                return resultMessage(JSON.stringify(data)); // html-בדף ה message מציג את 
+                const rawData = await fetch("http://127.0.0.1:8180/cards");
+                const data = await rawData.json();
+                return resultMessage(JSON.stringify(data));
             } catch (error) {
-                resultMessage(`Error: ${error.message}`); // html-במידה ותהייה שגיאה יציג אותה בדף ה
+                resultMessage(`Error: ${error.message}`);
             }
         };
 

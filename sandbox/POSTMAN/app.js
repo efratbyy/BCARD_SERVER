@@ -2,7 +2,7 @@ const express = require("express");
 const page = require("./pageExe");
 const app = express();
 
-app.use(express.json()); // הגדרת סוג המידע שהשרת יכול לקבל
+app.use(express.json());
 
 app.get("/headers", (req, res) => {
   console.log("In Headers", req.headers);
@@ -21,7 +21,7 @@ app.get("/query", (req, res) => {
 
 app.get("/body", (req, res) => {
   console.log(req.body);
-  res.header({ my_header: "david" }); // response-ב heder הוספת
+  res.header({ my_header: "david" });
   res.send("In body!");
 });
 

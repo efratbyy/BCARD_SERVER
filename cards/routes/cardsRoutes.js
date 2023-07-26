@@ -12,7 +12,7 @@ const {
 const auth = require("../../auth/authService");
 const router = express.Router();
 
-router.get("/", getCards); // זהו קונטרולר שאחראי לתת תשובה לגולש getCards
+router.get("/", getCards);
 router.get("/my-cards", auth, getMyCards);
 router.get("/:cardId", getCard);
 router.post("/", auth, createCard);

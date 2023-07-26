@@ -6,10 +6,10 @@ const KEY = config.get("JWT_KEY");
 
 const auth = (req, res, next) => {
   try {
-    const tokenFromClient = req.header("x-auth-token"); // מאובייקט הבקשה token-חילוץ ה
+    const tokenFromClient = req.header("x-auth-token");
     if (!tokenFromClient) throw new Error("Authentication Error: Please Login");
 
-    const userPayload = verifyToken(tokenFromClient, KEY); // KEY-וחילוץ הסיסמא שב tokenFromClient-חילוץ המידע שהוחבא ב
+    const userPayload = verifyToken(tokenFromClient, KEY);
     if (!userPayload) throw new Error("Authentication Error: Unauthorize user");
 
     req.user = userPayload;

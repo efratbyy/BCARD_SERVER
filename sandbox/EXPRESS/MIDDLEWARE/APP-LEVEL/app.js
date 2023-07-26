@@ -52,7 +52,6 @@
 //   res.send("in get!");
 // });
 
-// לעולם לא יגיע לכאן כי הוא כבר מיורת במטודה למעלה ויש החזרה של תשובה
 // app.get("/", (req, res, next) => {
 //   console.log(chalk.yellowBright("in get second method!!!"));
 //   res.send("in get second!");
@@ -84,8 +83,8 @@
 //   res.send("testing!!!!");
 // res.send({ key: "value" });
 //   res.send(["one", "two", "three"]);
-//   res.send(false); // ממיר למרוזת תווים
-//   res.send(503); // הוא חושב שאני מנסה לשלוח סטאטוס קוד
+//   res.send(false);
+//   res.send(503);
 //   res.send(null);
 // });
 
@@ -132,19 +131,13 @@
 //   console.log(chalk.blueBright(`Listening on :http://localhost:${PORT}`));
 // });
 
-
-
-
-
-
 /*************** ****************/
 // const express = require("express");
 // const app = express();
 // const chalk = require("chalk");
 
-// // את שתי שורות אלו חשוב לשים בראש הדף כדי שהשרת ידע איזה סוג מידע יכול לקבל לפני שקורא את כל שאר הקוד
-// app.use(express.json()); // הגדרת סוג המידע שהשרת יכול לקבל - מסוג ג׳ייסון
-// app.use("/", express.text()); // server can receive string
+// app.use(express.json());
+// app.use("/", express.text());
 
 // app.use((req, res, next) => {
 //   console.log(chalk.yellowBright("in first app.use!"));
@@ -194,7 +187,6 @@
 //   res.send("in get!");
 // });
 
-// לעולם לא יגיע לכאן כי הוא כבר מיורת במטודה למעלה ויש החזרה של תשובה
 // app.get("/", (req, res, next) => {
 //   console.log(chalk.yellowBright("in get second method!!!"));
 //   res.send("in get second!");
@@ -226,8 +218,8 @@
 //   res.send("testing!!!!");
 //   res.send({ key: "value" });
 //     res.send(["one", "two", "three"]);
-//     res.send(false); // ממיר למרוזת תווים
-//     res.send(503); // הוא חושב שאני מנסה לשלוח סטאטוס קוד
+//     res.send(false);
+//     res.send(503);
 //     res.send(null);
 // });
 
@@ -248,21 +240,17 @@
 // app.use("/headers", (req, res) => {
 //   const headers = req.headers;
 //   const query_params = req.query;
-//   // ידפיס בקונסול את האובייקט שאת המפתחות והערכים שלו אכניס בשורת הכתובת (http://localhost:9191/headers?waw=waw!!!!!)
 //   console.log(query_params);
 //   res.send({ headers, query_params });
 // });
 
-// // את המפתח נכניס בנתיב (בשרת) ואת הערך יכניס הלקוח בשורת הכתובת - params
 // app.use("/params/:david", (req, res) => {
-//   // הערך יגיע בשורת הכתובת (http://localhost:9191/params/yakin)
 //   const params = req.params;
 //   const query_params = req.query;
 //   console.log(query_params);
 //   res.send(params);
 // });
 
-// // בשרת נכניס רק את הנתיב והלקוח יכניס בשורת הכתובת את המפתחות והערכים - query-params
 // // http://localhost:9191/headers?waw=waw!!!!!
 // app.use("/query-params", (req, res) => {
 //   const query_params = req.query;
@@ -277,9 +265,7 @@
 // };
 // app.use(test);
 
-// app.use("/", express.json()); // next ובסופה יש json מטודה שמקבלת
-// // /-לא חייב להןסיף את ה
-// // server can receive json
+// app.use("/", express.json());
 
 // app.use("/body", (req, res) => {
 //   res.send(req.body);

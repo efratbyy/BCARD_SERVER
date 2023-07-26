@@ -5,7 +5,7 @@ const cors = require("cors");
 
 // app.use(
 //   cors({
-//     origin: "http://127.0.0.1: 5500", // קובע מאיזה פורט מסכים לקבל
+//     origin: "http://127.0.0.1: 5500",
 //     optionsSuccessStatus: 200,
 //   })
 // );
@@ -17,7 +17,7 @@ const cors = require("cors");
 //   })
 // );
 
-// app.use(cors()); // הדרך שתגרום לפרצת אבטחה בשרת
+// app.use(cors());
 
 // const allowedApis = ["http://127.0.0.1:5502", "http://127.0.0.1:5501"];
 
@@ -35,11 +35,11 @@ const cors = require("cors");
 //   let corsOptions;
 //   if (allowedApis.indexOf(req.header("Origin")) !== -1)
 //   {
-//     corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+//     corsOptions = { origin: true };
 //   } else {
-//     corsOptions = { origin: false }; // disable CORS for this request
+//     corsOptions = { origin: false };
 //   }
-//   callback(null, corsOptions); // callback expects two parameters: error and options
+//   callback(null, corsOptions);
 // };
 
 // app.use(cors(corsOptions));

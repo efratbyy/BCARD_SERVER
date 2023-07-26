@@ -2,9 +2,6 @@ const express = require("express");
 const app = express();
 const chalk = require("chalk");
 
-// (תוכנת ביניים) Middleware - It's a software that acts as a bridge between an operation system or database and application, especially on a network.
-// מיירט את כל סוגי הבקשות. לא משנה מה סוג הבקשה, הוא יפעיל את המטודה שבו - app.use
-
 // app.use(
 //   "/user",
 //   (req, res, next) => {
@@ -24,7 +21,6 @@ const chalk = require("chalk");
 //   res.send("in get!");
 // });
 
-// // לעולם לא יגיע לכאן כי הוא כבר מיורט למעלה ויש החזרה של תשובה
 // app.get("/", (req, res, next) => {
 //   console.log(chalk.yellowBright("in get method!!!"));
 //   res.send("in second get!");
@@ -56,8 +52,8 @@ const chalk = require("chalk");
 //   //   res.send("testing!!!");
 //   //   res.send({ key: "value" });
 //   //   res.send(["one", "two", "three"]);
-//   //   res.send(false); // למחרוזת תווים false המיר את
-//   //   res.send(400); // הוא חושב שאני מנסה לשלוח סטטוס קוד
+//   //   res.send(false);
+//   //   res.send(400);
 // //   res.send(null);
 // });
 

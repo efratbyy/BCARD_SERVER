@@ -8,7 +8,6 @@ const data = require("./initialData.json");
 const chalk = require("chalk");
 
 const generateInitialCards = async () => {
-  // יצירת הכרטיסים הראשונים באתר
   const { cards } = data;
   const userId = "64a1445f8d474975773b9dd1";
   cards.forEach(async (card) => {
@@ -31,7 +30,6 @@ const generateInitialCards = async () => {
 };
 
 const generateInitialUsers = async () => {
-  // יצירת המשתמשים הראשונים באתר
   const { users } = data;
   users.forEach(async (user) => {
     try {

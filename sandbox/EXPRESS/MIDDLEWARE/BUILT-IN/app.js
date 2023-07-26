@@ -4,8 +4,8 @@ const chalk = require("chalk");
 
 app.use(express.static("./public"));
 
-app.use(express.json()); // server can receive json
-app.use(express.text()); // server can receive string
+app.use(express.json());
+app.use(express.text());
 
 app.get("/body", (req, res) => {
   const body = req.body;

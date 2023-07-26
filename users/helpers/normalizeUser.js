@@ -24,7 +24,7 @@ const normalizeUser = (rawUser) => {
     name,
     image,
     address,
-    password: generateUserPassword(rawUser.password), // מצפין את הסיסמא
+    password: generateUserPassword(rawUser.password),
   };
 
   return user;
