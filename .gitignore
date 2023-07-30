@@ -163,6 +163,7 @@ yarn-error.log*
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+loggers/logs/*
 
 # Ignore testing and coverage files
 coverage/
