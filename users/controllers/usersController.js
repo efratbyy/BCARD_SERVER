@@ -205,11 +205,19 @@ const changeUserBusinessStatus = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     let { id } = req.params;
-    const user = await User.findById(id);
-    if (!user)
+    const currUserId = req.body.currUserId;
+
+    userToDelete = await User.findById(id);
+    currentUser = await User.findById(currUserId);
+
+    if (!userToDelete || !currentUser)
       throw new Error(
         "Could not delete this user because a user with this ID cannot be found in the database"
       );
+
+    if (!currentUser.isAdmin)
+      throw new Error("Only an admin user can delete other users");
+
     const deletedUserFromDB = await User.findByIdAndDelete(id);
     res.send(deletedUserFromDB);
   } catch (error) {
